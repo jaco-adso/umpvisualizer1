@@ -34,8 +34,8 @@ const photoGalleries = {
   ),
 };
 const galleryVideos = Array.from(
-  document.querySelector('#video-assets').content.querySelectorAll('source'),
-  (source) => source.getAttribute('src'),
+  document.querySelector('#video-assets').content.querySelectorAll('[data-video]'),
+  (video) => video.dataset.video,
 );
 let currentPhotoIndex = 0;
 let currentVideoIndex = 0;
@@ -72,6 +72,10 @@ function stopYouTubeVideo() {
   youtubeVideo.src = 'about:blank';
 }
 
+function stopCarouselVideo() {
+  carouselVideo.src = 'about:blank';
+}
+
 function openVideoModal(event) {
   const selectedVideo = event.currentTarget.dataset.video;
   const youtubeEmbedUrl = selectedVideo ? getYouTubeEmbedUrl(selectedVideo) : null;
@@ -85,7 +89,7 @@ function openVideoModal(event) {
   photoCarousel.hidden = true;
   packageDetails.hidden = true;
   portfolioVideo.pause();
-  carouselVideo.pause();
+  stopCarouselVideo();
   stopYouTubeVideo();
 
   if (youtubeEmbedUrl) {
@@ -122,7 +126,7 @@ function openPortfolioMedia(event) {
   photoCarousel.hidden = true;
   packageDetails.hidden = true;
   portfolioVideo.pause();
-  carouselVideo.pause();
+  stopCarouselVideo();
   stopYouTubeVideo();
 
   if (isVideo || youtubeEmbedUrl) {
@@ -157,8 +161,7 @@ function openPortfolioMedia(event) {
 
 function showVideo(index) {
   currentVideoIndex = (index + galleryVideos.length) % galleryVideos.length;
-  carouselVideo.src = galleryVideos[currentVideoIndex];
-  carouselVideo.load();
+  carouselVideo.src = getYouTubeEmbedUrl(galleryVideos[currentVideoIndex]);
   videoCounter.textContent = `${currentVideoIndex + 1} / ${galleryVideos.length}`;
 }
 
@@ -166,6 +169,7 @@ function openVideoCarousel() {
   videoModal.hidden = false;
   document.body.style.overflow = 'hidden';
   portfolioVideo.pause();
+  stopYouTubeVideo();
   portfolioVideo.hidden = true;
   stopYouTubeVideo();
   videoFrame.hidden = true;
@@ -190,7 +194,7 @@ function openPhotoGallery(event) {
   videoModal.hidden = false;
   document.body.style.overflow = 'hidden';
   portfolioVideo.pause();
-  carouselVideo.pause();
+  stopCarouselVideo();
   stopYouTubeVideo();
   portfolioVideo.hidden = true;
   videoFrame.hidden = true;
@@ -230,7 +234,7 @@ function openPackageDetails(event) {
   stopYouTubeVideo();
   portfolioImageFrame.hidden = true;
   videoCarousel.hidden = true;
-  carouselVideo.pause();
+  stopCarouselVideo();
   photoCarousel.hidden = true;
   packageDetails.hidden = false;
   packageDetailCopy.replaceChildren(packageDescription.cloneNode(true));
@@ -242,7 +246,7 @@ function closeVideoModal() {
   videoModal.hidden = true;
   document.body.style.overflow = '';
   portfolioVideo.pause();
-  carouselVideo.pause();
+  stopCarouselVideo();
   stopYouTubeVideo();
 }
 
